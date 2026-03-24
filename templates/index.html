@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}MyJournal - Your Personal Journal{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-content">
+        <h1>Your Thoughts,<br>Your Space</h1>
+        <p class="hero-subtitle">A beautiful, private space to capture your daily reflections, memories, and moments. Share your stories with the world or keep them just for yourself.</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('register') }}" class="btn btn-large btn-primary">Start Writing</a>
+            <a href="{{ url_for('public_journals') }}" class="btn btn-large btn-secondary">Explore Public Journals</a>
+        </div>
+    </div>
+    <div class="hero-image">
+        <div class="journal-preview">
+            <div class="preview-header">
+                <span class="preview-date">Today</span>
+                <span class="preview-mood">😊</span>
+            </div>
+            <h3>A moment of gratitude</h3>
+            <p>Today I realized how beautiful the small things are...</p>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <h2>Why Keep a Journal?</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🔒</div>
+            <h3>Private by Default</h3>
+            <p>Your entries are private unless you choose to share them with the world.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">😊</div>
+            <h3>Track Your Mood</h3>
+            <p>Add moods to your entries and see patterns in your emotional journey.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">🌍</div>
+            <h3>Share Your Story</h3>
+            <p>Make entries public to inspire others or connect with like-minded writers.</p>
+        </div>
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Track Progress</h3>
+            <p>See your writing stats and maintain your journaling streak.</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

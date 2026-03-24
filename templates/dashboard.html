@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - MyJournal{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+    <header class="dashboard-header">
+        <div>
+            <h1>Welcome, {{ session.username }}!</h1>
+            <p class="subtitle">Your personal journal dashboard</p>
+        </div>
+        <a href="{{ url_for('create_journal') }}" class="btn btn-primary">
+            <span>+</span> New Entry
+        </a>
+    </header>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.total }}</div>
+            <div class="stat-label">Total Entries</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.this_month }}</div>
+            <div class="stat-label">This Month</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.public }}</div>
+            <div class="stat-label">Public</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ stats.private }}</div>
+            <div class="stat-label">Private</div>
+        </div>
+    </div>
+
+    {% if stats.moods %}
+    <div class="mood-summary">
+        <h3>Your Moods</h3>
+        <div class="mood-tags">
+            {% for mood, count in stats.moods.items() %}
+                <span class="mood-tag">{{ mood }} <small>({{ count }})</small></span>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <section class="journals-section">
+        <h2>Your Journal Entries</h2>
+        
+        {% if journals %}
+            <div class="journals-grid">
+                {% for journal in journals %}
+                    <article class="journal-card">
+                        <div class="journal-card-header">
+                            <span class="journal-date">{{ journal.created_at|format_dt('%Y-%m-%d') }}</span>
+                            <div class="journal-badges">
+                                {% if journal.mood %}
+                                    <span class="mood-badge">{{ journal.mood }}</span>
+                                {% endif %}
+                                <span class="visibility-badge {{ 'public' if journal.is_public else 'private' }}">
+                                    {{ '🌍 Public' if journal.is_public else '🔒 Private' }}
+                                </span>
+                            </div>
+                        </div>
+                        <h3 class="journal-title">
+                            <a href="{{ url_for('view_journal', journal_id=journal.id) }}">
+                                {{ journal.title }}
+                            </a>
+                        </h3>
+                        <p class="journal-excerpt">{{ journal.content[:150] }}{% if journal.content|length > 150 %}...{% endif %}</p>
+                        <div class="journal-actions">
+                            <a href="{{ url_for('view_journal', journal_id=journal.id) }}" class="btn btn-small">Read</a>
+                            <a href="{{ url_for('edit_journal', journal_id=journal.id) }}" class="btn btn-small btn-secondary">Edit</a>
+                            <form action="{{ url_for('delete_journal', journal_id=journal.id) }}" method="POST" class="delete-form" onsubmit="return confirm('Are you sure you want to delete this entry?');">
+                                <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                            </form>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon">📝</div>
+                <h3>No entries yet</h3>
+                <p>Start your journaling journey by creating your first entry.</p>
+                <a href="{{ url_for('create_journal') }}" class="btn btn-primary">Write Your First Entry</a>
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Public Journals - MyJournal{% endblock %}
+
+{% block content %}
+<div class="public-feed">
+    <header class="feed-header">
+        <h1>Public Journals</h1>
+        <p class="subtitle">Thoughts and stories shared by our community</p>
+    </header>
+
+    {% if journals %}
+        <div class="journals-feed">
+            {% for journal in journals %}
+                <article class="journal-card public-card">
+                    <div class="journal-card-header">
+                        <span class="journal-author">{{ journal.username }}</span>
+                        <span class="journal-date">{{ journal.created_at|format_dt('%Y-%m-%d') }}</span>
+                        {% if journal.mood %}
+                            <span class="mood-badge">{{ journal.mood }}</span>
+                        {% endif %}
+                    </div>
+                    <h3 class="journal-title">
+                        <a href="{{ url_for('view_journal', journal_id=journal.id) }}">
+                            {{ journal.title }}
+                        </a>
+                    </h3>
+                    <p class="journal-excerpt">{{ journal.content[:200] }}{% if journal.content|length > 200 %}...{% endif %}</p>
+                    <a href="{{ url_for('view_journal', journal_id=journal.id) }}" class="read-more">Read more →</a>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">🌍</div>
+            <h3>No public journals yet</h3>
+            <p>Be the first to share your thoughts with the world!</p>
+            {% if session.user_id %}
+                <a href="{{ url_for('create_journal') }}" class="btn btn-primary">Write a Public Entry</a>
+            {% else %}
+                <a href="{{ url_for('register') }}" class="btn btn-primary">Sign Up to Write</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

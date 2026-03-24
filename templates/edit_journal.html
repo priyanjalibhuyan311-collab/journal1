@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Entry - MyJournal{% endblock %}
+
+{% block content %}
+<div class="editor-container">
+    <form method="POST" class="journal-form">
+        <div class="editor-header">
+            <a href="{{ url_for('view_journal', journal_id=journal.id) }}" class="btn btn-secondary">← Back</a>
+            <h1>Edit Entry</h1>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+
+        <div class="form-group">
+            <label for="title">Title</label>
+            <input type="text" id="title" name="title" value="{{ journal.title }}" required>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="mood">How are you feeling?</label>
+                <select id="mood" name="mood">
+                    <option value="">Select mood...</option>
+                    <option value="😊 Happy" {% if journal.mood == '😊 Happy' %}selected{% endif %}>😊 Happy</option>
+                    <option value="😌 Calm" {% if journal.mood == '😌 Calm' %}selected{% endif %}>😌 Calm</option>
+                    <option value="😔 Sad" {% if journal.mood == '😔 Sad' %}selected{% endif %}>😔 Sad</option>
+                    <option value="😤 Frustrated" {% if journal.mood == '😤 Frustrated' %}selected{% endif %}>😤 Frustrated</option>
+                    <option value="😴 Tired" {% if journal.mood == '😴 Tired' %}selected{% endif %}>😴 Tired</option>
+                    <option value="🤔 Thoughtful" {% if journal.mood == '🤔 Thoughtful' %}selected{% endif %}>🤔 Thoughtful</option>
+                    <option value="😃 Excited" {% if journal.mood == '😃 Excited' %}selected{% endif %}>😃 Excited</option>
+                    <option value="😰 Anxious" {% if journal.mood == '😰 Anxious' %}selected{% endif %}>😰 Anxious</option>
+                    <option value="🥰 Grateful" {% if journal.mood == '🥰 Grateful' %}selected{% endif %}>🥰 Grateful</option>
+                    <option value="😐 Neutral" {% if journal.mood == '😐 Neutral' %}selected{% endif %}>😐 Neutral</option>
+                </select>
+            </div>
+
+            <div class="form-group visibility-toggle">
+                <label class="toggle-label">
+                    <input type="checkbox" name="is_public" id="is_public" {% if journal.is_public %}checked{% endif %}>
+                    <span class="toggle-switch"></span>
+                    <span class="toggle-text">Make this entry public</span>
+                </label>
+                <small>Public entries can be read by anyone</small>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="content">Your thoughts...</label>
+            <textarea id="content" name="content" rows="15" required>{{ journal.content }}</textarea>
+        </div>
+    </form>
+</div>
+{% endblock %}
