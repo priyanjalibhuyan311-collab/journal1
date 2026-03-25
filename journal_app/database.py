@@ -9,9 +9,27 @@ from werkzeug.security import generate_password_hash, check_password_hash
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 DB_ENGINE = os.getenv("DB_ENGINE", "sqlite").strip().lower()
-SQLITE_DB_PATH = os.path.abspath(
-    os.path.join(BASE_DIR, os.getenv("SQLITE_DB_PATH", "journal.db"))
-)
+IS_VERCEL = os.getenv("VERCEL") == "1"
+
+_default_sqlite_path = "/tmp/journal.db" if IS_VERCEL else "journal.db"
+_sqlite_db_path_value = os.getenv("SQLITE_DB_PATH", _default_sqlite_path)
+SQLITE_DB_PATH = os.path.abspath(os.path.join(BASE_DIR, _sqlite_db_path_value))
+
+
+def _get_mysql_url() -> str:
+    for key in ("MYSQL_URL", "DATABASE_URL", "AIVEN_DATABASE_URL"):
+        value = os.getenv(key, "").strip()
+        if value:
+            return value
+    return ""
+
+
+# On Vercel, localhost MySQL is unreachable; fall back to sqlite so deploys don't crash.
+if IS_VERCEL and DB_ENGINE == "mysql":
+    _mysql_url = _get_mysql_url()
+    _mysql_host = os.getenv("MYSQL_HOST", "").strip().lower()
+    if not _mysql_url and _mysql_host in {"", "127.0.0.1", "localhost"}:
+        DB_ENGINE = "sqlite"
 
 if DB_ENGINE not in {"sqlite", "mysql"}:
     raise RuntimeError("DB_ENGINE must be 'sqlite' or 'mysql'.")
@@ -44,7 +62,7 @@ def get_db():
                 "PyMySQL is required for DB_ENGINE=mysql. Install it with `pip install pymysql`."
             ) from exc
 
-        mysql_url = os.getenv("MYSQL_URL", "").strip()
+        mysql_url = _get_mysql_url()
         if mysql_url:
             parsed = urlparse(mysql_url)
             query_params = parse_qs(parsed.query)
